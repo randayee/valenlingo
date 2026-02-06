@@ -1,12 +1,12 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
 import confetti from "canvas-confetti";
 import { motion } from "framer-motion";
 
 import { Button, Card, Pill } from "@/components/ui";
-import type { Lesson } from "@/lib/lessons";
+import type { Lesson, MatchLesson, McqLesson, FillLesson, TranslateLesson } from "@/lib/lessons";
 import type { Progress } from "@/lib/progress";
 import { loadProgress, markCompleted, saveProgress } from "@/lib/progress";
 
@@ -35,34 +35,60 @@ export default function LessonRunner({ lesson, onComplete }: Props) {
   const [checked, setChecked] = useState(false);
   const [attempted, setAttempted] = useState(false);
 
-  const Exercise = useMemo(() => {
-    switch (lesson.type) {
-      case "match":
-        return MatchPairs;
-      case "mcq":
-        return MultipleChoice;
-      case "fill":
-        return FillBlank;
-      case "translate":
-        return Translate;
-      default:
-        return null;
-    }
-  }, [lesson.type]);
-
-  // ✅ Stable callbacks (prevents match flicker)
   const handleValidityChange = useCallback((ok: boolean) => {
     setIsCorrect(ok);
   }, []);
 
   const handleAttemptChange = useCallback((didAttempt: boolean) => {
     if (didAttempt) setAttempted(true);
-
-    // Only hide feedback if user changes/attempts AFTER checking
-    setChecked((prevChecked) => (prevChecked ? false : prevChecked));
+    // hide old feedback once user interacts again
+    setChecked((prev) => (prev ? false : prev));
   }, []);
 
   const buttonLabel = lesson.isFinal ? "Unlock surprise" : "Check";
+
+  const renderExercise = () => {
+    switch (lesson.type) {
+      case "match":
+        return (
+          <MatchPairs
+            lesson={lesson as MatchLesson}
+            onValidityChange={handleValidityChange}
+            onAttemptChange={handleAttemptChange}
+          />
+        );
+
+      case "mcq":
+        return (
+          <MultipleChoice
+            lesson={lesson as McqLesson}
+            onValidityChange={handleValidityChange}
+            onAttemptChange={handleAttemptChange}
+          />
+        );
+
+      case "fill":
+        return (
+          <FillBlank
+            lesson={lesson as FillLesson}
+            onValidityChange={handleValidityChange}
+            onAttemptChange={handleAttemptChange}
+          />
+        );
+
+      case "translate":
+        return (
+          <Translate
+            lesson={lesson as TranslateLesson}
+            onValidityChange={handleValidityChange}
+            onAttemptChange={handleAttemptChange}
+          />
+        );
+
+      default:
+        return <div className="text-slate-600">Unknown exercise.</div>;
+    }
+  };
 
   return (
     <Card>
@@ -81,15 +107,7 @@ export default function LessonRunner({ lesson, onComplete }: Props) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.25 }}
         >
-          {Exercise ? (
-            <Exercise
-              lesson={lesson as any}
-              onValidityChange={handleValidityChange}
-              onAttemptChange={handleAttemptChange}
-            />
-          ) : (
-            <div className="text-slate-600">Unknown exercise.</div>
-          )}
+          {renderExercise()}
         </motion.div>
 
         {checked && (
