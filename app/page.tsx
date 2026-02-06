@@ -56,7 +56,7 @@ export default function Home() {
           <Card className="bg-white shadow-md">
             <div className="space-y-3">
               <div className="flex items-center justify-between gap-3">
-                <Pill>Today’s lesson</Pill>
+                <Pill>Kaye's lesson</Pill>
                 <div className="text-xs font-semibold text-slate-500">
                   {progressText}
                 </div>
@@ -67,7 +67,9 @@ export default function Home() {
               </h1>
 
               <p className="text-slate-600 leading-relaxed">
-                I made you a tiny Duolingo-style lesson because you’ve been learning French —
+                Kaye,
+
+                I made you a tiny Duolingo-style lesson because you’ve been learning French,
                 and I wanted to turn it into something a little more special.
                 <br />
                 <span className="font-semibold text-slate-800">
