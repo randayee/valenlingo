@@ -1,13 +1,23 @@
 import clsx from "clsx";
 
-export function Card({ className, children }) {
+/** CARD */
+export function Card({
+  className = "",
+  children,
+}) {
   return (
-    <div className={clsx("rounded-3xl bg-white p-6 shadow-sm", className)}>
+    <div
+      className={clsx(
+        "rounded-3xl bg-white p-6 shadow-sm",
+        className
+      )}
+    >
       {children}
     </div>
   );
 }
 
+/** PILL */
 export function Pill({ children }) {
   return (
     <span className="inline-flex items-center rounded-full bg-slate-100 px-3 py-1 text-sm font-semibold text-slate-700">
@@ -16,7 +26,8 @@ export function Pill({ children }) {
   );
 }
 
-export function Button({ className, ...props }) {
+/** BUTTON */
+export function Button({ className = "", ...props }) {
   return (
     <button
       className={clsx(
